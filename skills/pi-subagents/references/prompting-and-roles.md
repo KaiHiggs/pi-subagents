@@ -9,7 +9,7 @@ workflow fit choose a shape after that; they do not authorize a launch.
 | Agent | Use for | Default context | Tier |
 | --- | --- | --- | --- |
 | `scout` | Codebase recon | fresh | fast |
-| `worker` | Implementation, the single writer | fresh | fast capable |
+| `worker` | Implementation | fresh | fast capable |
 | `reviewer` | Code and plan review; read-only (send fixes to `worker`) | fresh | strong, high thinking for serious reviews |
 | `researcher` | Web and primary-source research | fresh | default |
 | `delegate` | Generic bounded task | fresh | default |

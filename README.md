@@ -4,6 +4,10 @@
 
 # pi-subagents
 
+Fork note: this branch removes the blanket writer-count/isolation policy. Workspace coordination follows the
+operator/project contract. See [scope, verification and deployment caveats](docs/fork-workspace-policy.md).
+
+
 `pi-subagents` lets Pi delegate work to focused child agents. Use it for code review, scouting, implementation, parallel audits, saved workflows, background jobs, and anything else that benefits from a second or third set of model eyes.
 
 <https://github.com/user-attachments/assets/702554ec-faaf-4635-80aa-fb5d6e292fd1>

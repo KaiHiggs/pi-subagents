@@ -672,7 +672,7 @@ The package bundles a `pi-subagents` skill that is automatically available to th
 What it covers:
 
 - **Calls**: the common `subagent` calls, workflow script and resume shapes, and async waiting rules.
-- **Delegation rules**: when to delegate at all, what every child brief contains, one writer per worktree, fresh or forked context, and what to do when a lane fails.
+- **Delegation rules**: when to delegate at all, what every child brief contains, operator/project workspace coordination, fresh or forked context, and what to do when a lane fails.
 - **Prompt workflow recipes**: how to apply the packaged techniques directly with `subagent(...)` when the user describes the workflow in natural language instead of invoking a slash command: parallel review, review loop, parallel research, gather-context-and-clarify, parallel cleanup, and oracle consultation.
 - **Orchestration**: splitting work into lanes, review loops, finding disposition, and gate-failure triage.
 - **Lookups**: which `guide` section answers each rarer question, so the skill does not copy this reference.

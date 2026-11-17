@@ -97,8 +97,9 @@ number.
 
 ## Rules
 
-- One writer per cwd or worktree. Parallelize reading, review, and
-  validation. `worktree: true` needs a clean checkout (untracked files count;
+- Workspace layout and mutation coordination follow the operator's and project's
+  contract. Shared workspaces and isolated worktrees are both supported; do not
+  impose a global writer count. `worktree: true` needs a clean checkout (untracked files count;
   `.pi/subagents/` does not). For Pi extension repos, put lane worktrees
   outside `~/.pi/agent/extensions`, for example `~/.pi/agent/worktrees`.
 - Reviewers use fresh context. Use `context: "fork"` only when the child needs

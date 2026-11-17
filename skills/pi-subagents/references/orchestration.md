@@ -115,10 +115,10 @@ remove scratch reports from the worktree.
 Keep a worktree until its handoff is durable, no run owns it, and no later
 gate needs it. If a run stops or needs attention, preserve its worktree and
 artifacts, then resume that run or start one replacement lane from the
-handoff. Never start a second writer while worktree ownership is unclear.
+handoff. Resolve unclear resource ownership before mutations; do not duplicate abandoned work.
 
 Before reporting done, check the board: every lane terminal or blocked with a
-named next action; one writer per worktree; required validation and fresh
+named next action; ownership follows the approved coordination contract; required validation and fresh
 review done; accepted findings fixed and revalidated; publication authority
 present before any push, comment, merge, or release; residual risks and
 skipped checks stated.

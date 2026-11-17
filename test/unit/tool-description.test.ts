@@ -52,6 +52,40 @@ describe("registered subagent tool description", () => {
 		assert.match(buildSubagentToolDescription({ toolDescriptionMode: "custom" }, { cwd, agentDir }), /Operator-owned custom guidance/);
 	});
 
+	it("does not impose a global writer count or isolation policy in any description mode", () => {
+		const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "pi-subagents-workspace-policy-"));
+		const agentDir = fs.mkdtempSync(path.join(os.tmpdir(), "pi-subagents-workspace-agent-"));
+		try {
+			fs.mkdirSync(path.join(cwd, ".pi"), { recursive: true });
+			fs.writeFileSync(path.join(cwd, ".pi", "subagent-tool-description.md"), "Use the operator-selected shared workspace and its resource coordination.", "utf-8");
+			for (const mode of [undefined, "compact", "full", "custom"] as const) {
+				const description = buildSubagentToolDescription(mode ? { toolDescriptionMode: mode } : {}, { cwd, agentDir });
+				assert.doesNotMatch(description, /One writer per cwd\/worktree|isolate concurrent writers/i);
+				assert.match(description, /Delegate only when the operator asked/);
+				assert.match(description, /After a launch or runtime failure, stop and report it/);
+			}
+			assert.match(buildSubagentToolDescription({ toolDescriptionMode: "custom" }, { cwd, agentDir }), /operator-selected shared workspace/);
+			for (const file of ["skills/pi-subagents/SKILL.md", "skills/pi-subagents/references/orchestration.md", "skills/pi-subagents/references/prompting-and-roles.md", "docs/agents.md"]) {
+				assert.doesNotMatch(fs.readFileSync(path.join(projectRoot, file), "utf-8"), /one writer per cwd|one writer per worktree|implementation, the single writer/i, file);
+			}
+		} finally {
+			fs.rmSync(cwd, { recursive: true, force: true });
+			fs.rmSync(agentDir, { recursive: true, force: true });
+		}
+	});
+	it("preserves an operator's explicit choice of serialized writing", () => {
+		const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "pi-subagents-serialized-choice-"));
+		const agentDir = fs.mkdtempSync(path.join(os.tmpdir(), "pi-subagents-serialized-agent-"));
+		try {
+			fs.mkdirSync(path.join(cwd, ".pi"), { recursive: true });
+			const text = "For this job, use one writer and keep its reviewers read-only.";
+			fs.writeFileSync(path.join(cwd, ".pi", "subagent-tool-description.md"), text, "utf-8");
+			assert.ok(buildSubagentToolDescription({ toolDescriptionMode: "custom" }, { cwd, agentDir }).includes(text));
+		} finally {
+			fs.rmSync(cwd, { recursive: true, force: true });
+			fs.rmSync(agentDir, { recursive: true, force: true });
+		}
+	});
 	it("uses a one-line snippet only by default", () => {
 		assert.equal(buildSubagentToolDescription(), DEFAULT_SUBAGENT_TOOL_DESCRIPTION);
 		assert.deepEqual(buildSubagentToolPromptMetadata(), { promptSnippet: SUBAGENT_TOOL_PROMPT_SNIPPET });
@@ -74,7 +108,6 @@ describe("registered subagent tool description", () => {
 				/\{action,id\?,options:\{\.\.\.\}\}; fields not in this schema go in options/,
 				/Launch agents by name and pass models as exact provider\/id; an unknown agent or model returns the valid choices/,
 				/Native async completion wakes this session: return control; do not sleep, poll or call bg_wait for it/,
-				/One writer per cwd\/worktree/,
 				/After a launch or runtime failure, stop and report it; never silently switch to interactive_shell, pi -ne or another CLI/,
 				/guide workflows\/recommended-orchestration-pattern.*guide workflows\/scripted-workflows.*guide tool-reference\/retained-children.*guide tool-reference\/external-cli-agent-profiles/,
 			]) assert.match(description, contract);
@@ -146,7 +179,7 @@ describe("registered subagent tool description", () => {
 		assert.match(description, /Custom intro/);
 		assert.match(description, /SAFETY-CRITICAL SUBAGENT GUIDANCE/);
 		assert.match(description, /Delegate only when the operator asked/);
-		assert.match(description, /One writer per cwd\/worktree/);
+		assert.match(description, /After a launch or runtime failure, stop and report it/);
 	});
 
 	it("deduplicates compact placeholder safety guidance in custom descriptions", () => {
